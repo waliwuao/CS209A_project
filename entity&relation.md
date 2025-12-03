@@ -28,7 +28,7 @@ answer_delay int (answer_creation_date - question_creation_date, 回答时间与
 
 #### 这个entity主要是为第四个分析服务
 
-# Declaration
+# Declarations
 
 上面每个主体的属性名称后面都有值的数据类型。目前想法是建立tags, questions, answers三个表，各自的主键和外键可以在上面看到标注。
 
