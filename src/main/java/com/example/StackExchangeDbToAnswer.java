@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class StackExchangeDbToAnswer {
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/cs209a_project";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "Dr141592";
+    private static final String PASSWORD = "xxxx";
     private static final String BASE_URL = "https://api.stackexchange.com/2.3";
     private static final HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
@@ -264,4 +264,5 @@ public class StackExchangeDbToAnswer {
         public int getAccount_id() { return account_id; }
         public int getReputation() { return reputation; }
     }
+
 }
