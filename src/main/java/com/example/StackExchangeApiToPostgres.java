@@ -76,8 +76,8 @@ public class StackExchangeApiToPostgres {
     private static List<Map<String, Object>> generateMonthDateRanges() {
         List<Map<String, Object>> ranges = new ArrayList<>();
 
-        LocalDateTime startMonth = LocalDateTime.of(2025, 4, 1, 0, 0, 0);
-        LocalDateTime endMonth = LocalDateTime.of(2025, 4, 1, 0, 0, 0);
+        LocalDateTime startMonth = LocalDateTime.of(2023, 12, 1, 0, 0, 0);
+        LocalDateTime endMonth = LocalDateTime.of(2025, 11, 1, 0, 0, 0);
 
         LocalDateTime current = startMonth;
         while (!current.isAfter(endMonth)) {
