@@ -29,7 +29,6 @@ answer_delay int (answer_creation_date - question_creation_date, 回答时间与
 #### 这个entity主要是为第四个分析服务
 
 # Declarations
-
 上面每个主体的属性名称后面都有值的数据类型。目前想法是建立tags, questions, answers三个表，各自的主键和外键可以在上面看到标注。
 
 四个数据分析里面，第一个可以在tags中先group by creation_date_period，然后group by name，然后计数。
@@ -42,14 +41,14 @@ answer_delay int (answer_creation_date - question_creation_date, 回答时间与
 
 ### 时间戳转换例子
 ```java
-    public static void main(String[] args) {
-        String timestampStr = "3670695200"; // 秒级时间戳，十位
-        long timestampSeconds = Long.parseLong(timestampStr); 
-        Instant instantSeconds = Instant.ofEpochSecond(timestampSeconds);  
-        localDateTime localDateTime = LocalDateTime.ofInstant(instantSeconds, ZoneId.systemDefault());   
+public static void main(String[] args) {
+    String timestampStr = "3670695200"; // 秒级时间戳，十位
+    long timestampSeconds = Long.parseLong(timestampStr); 
+    Instant instantSeconds = Instant.ofEpochSecond(timestampSeconds);  
+    localDateTime localDateTime = LocalDateTime.ofInstant(instantSeconds, ZoneId.systemDefault());   
         // 格式化为字符串        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");    
-        String formatted = localDateTime.format(formatter);   
-        System.out.println("格式化时间: " + formatted);
-    }
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");    
+    String formatted = localDateTime.format(formatter);   
+    System.out.println("格式化时间: " + formatted);
+}
 ```
