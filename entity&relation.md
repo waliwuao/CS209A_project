@@ -41,23 +41,15 @@ answer_delay int (answer_creation_date - question_creation_date, 回答时间与
 第四个根据作业要求里面提到的那几个角度，主要分析每个问题的回答情况，所以建立了answer，同时也需要分析问题的具体内容，所以也还没想好怎么做。
 
 ### 时间戳转换例子
-
+```java
     public static void main(String[] args) {
-
         String timestampStr = "3670695200"; // 秒级时间戳，十位
-
-        long timestampSeconds = Long.parseLong(timestampStr);
-            
-        Instant instantSeconds = Instant.ofEpochSecond(timestampSeconds);
-            
-        localDateTime localDateTime = LocalDateTime.ofInstant(instantSeconds, ZoneId.systemDefault());
-            
-        // 格式化为字符串
-            
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            
-        String formatted = localDateTime.format(formatter);
-            
+        long timestampSeconds = Long.parseLong(timestampStr); 
+        Instant instantSeconds = Instant.ofEpochSecond(timestampSeconds);  
+        localDateTime localDateTime = LocalDateTime.ofInstant(instantSeconds, ZoneId.systemDefault());   
+        // 格式化为字符串        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");    
+        String formatted = localDateTime.format(formatter);   
         System.out.println("格式化时间: " + formatted);
-    
     }
+```
