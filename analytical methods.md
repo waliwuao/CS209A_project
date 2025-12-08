@@ -56,3 +56,6 @@ GROUP BY t1.tag_name, t2.tag_name
 HAVING lift > 1  -- 只保留正相关的 tag 组合
 ORDER BY lift DESC;
 ```
+
+## Task 3
+在`java/com/example`文件夹中，`MultiTreadingCategory.java`包含关于多线程的标签，每个标签中有相关的关键词及其正则表达式，有需要时可以修改，也包含给单个问题分配标签所用到的方法， `MultiThreadQuestionClassifier.java`中包含批量处理问题用到的方法。批量处理问题是通过`QuestionRepository.java`实现的，通过仓库的`findAll()`方法得到所有问题，然后用处理单个问题的方法得到问题对应的标签，并用标签将问题分组。
