@@ -1,7 +1,12 @@
 package com.example;
 
 import java.util.List;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
 
+@Entity
+@Table
 public class QuestionItem {
     private List<String> tags;
     private Owner owner;
@@ -11,6 +16,7 @@ public class QuestionItem {
     private int answer_count;
     private int score;
     private int creation_date;
+    @Id
     private int question_id;
     private String title;
     private String body;
