@@ -1,6 +1,7 @@
 package com.example;
 
 import com.google.gson.Gson;
+import java.io.FileWriter;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -41,24 +42,61 @@ public class StackExchangeApiToPostgres {
                 for (String order : Arrays.asList("asc", "desc")) {
                     System.out.println("  Processing order: " + order);
                     try {
-                        String url = buildRequestUrl(order, fromDate, toDate);
+                        if ("desc".equals(order)) {
+                            for (int page = 1; page <= 3; page++) {
+                                String url = buildRequestUrl(order, fromDate, toDate, page);
+                                String jsonResponse = null;
+                                int retries = 0;
+                                while (jsonResponse == null && retries < 3) {
+                                    try {
+                                        jsonResponse = sendGetRequest(client, url);
+                                    } catch (Exception e) {
+                                        retries++;
+                                        System.err.println("    Page " + page + " request failed: " + e.getMessage() + ", retry " + retries + "/3");
+                                        if (retries < 3) {
+                                            sleep(10000); 
+                                        }
+                                    }
+                                }
+                                if (jsonResponse == null) {
+                                    System.err.println("    Page " + page + " skipped after 3 retries");
+                                    continue;
+                                }
 
-                        String jsonResponse = sendGetRequest(client, url);
+                                StackOverflowData data = gson.fromJson(new StringReader(jsonResponse), StackOverflowData.class);
 
-                        StackOverflowData data = gson.fromJson(new StringReader(jsonResponse), StackOverflowData.class);
+                                if (data.getItems() == null || data.getItems().isEmpty()) {
+                                    System.out.println("    Page " + page + " no data retrieved");
+                                    continue;
+                                }
 
-                        if (data.getItems() == null || data.getItems().isEmpty()) {
-                            System.out.println("  No data retrieved");
-                            continue;
+                                importAccounts(conn, data.getItems());
+                                importQuestions(conn, data.getItems());
+                                Map<String, Integer> tagMap = importTags(conn, data.getItems());
+                                importQuestionTags(conn, data.getItems(), tagMap);
+
+                                System.out.println("    Page " + page + " data import completed, total " + data.getItems().size() + " records");
+                                sleep(10000); // 每页间隔10秒
+                            }
+                        } else {
+                            // 升序时仅抓取一页，保持原逻辑
+                            String url = buildRequestUrl(order, fromDate, toDate, 1);
+                            String jsonResponse = sendGetRequest(client, url);
+                            StackOverflowData data = gson.fromJson(new StringReader(jsonResponse), StackOverflowData.class);
+
+                            if (data.getItems() == null || data.getItems().isEmpty()) {
+                                System.out.println("  No data retrieved");
+                                continue;
+                            }
+
+                            importAccounts(conn, data.getItems());
+                            importQuestions(conn, data.getItems());
+                            Map<String, Integer> tagMap = importTags(conn, data.getItems());
+                            importQuestionTags(conn, data.getItems(), tagMap);
+
+                            System.out.println("  Data import completed, total " + data.getItems().size() + " records");
+                            sleep(10000);
                         }
-
-                        importAccounts(conn, data.getItems());
-                        importQuestions(conn, data.getItems());
-                        Map<String, Integer> tagMap = importTags(conn, data.getItems());
-                        importQuestionTags(conn, data.getItems(), tagMap);
-
-                        System.out.println("  Data import completed, total " + data.getItems().size() + " records");
-                        sleep(10000);
                     } catch (Exception e) {
                         System.err.println("  Processing failed: " + e.getMessage());
                         e.printStackTrace();
@@ -99,7 +137,7 @@ public class StackExchangeApiToPostgres {
         return ranges;
     }
 
-    private static String buildRequestUrl(String order, long fromDate, long toDate) {
+    private static String buildRequestUrl(String order, long fromDate, long toDate, int page) {
         return API_URL + "?" +
                 "order=" + order +
                 "&sort=votes" +
@@ -108,7 +146,8 @@ public class StackExchangeApiToPostgres {
                 "&todate=" + toDate +
                 "&site=" + SITE +
                 "&pagesize=" + PAGE_SIZE +
-                "&filter=" + FILTER;
+                "&filter=" + FILTER +
+                "&page=" + page;
     }
 
     private static String sendGetRequest(HttpClient client, String url) throws Exception {
